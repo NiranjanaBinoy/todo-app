@@ -8,10 +8,22 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  --color-purple-50: #f8f6fc;
+  --color-purple-100: #f1eef9;
+  --color-purple-200: #e6dff5;
+  --color-purple-300: #d3c6ec;
+  --color-purple-400: #bca5e0;
+  --color-purple-500: #9e78cf;
+  --color-purple-600: #9464c3;
+  --color-purple-700: #8252af;
+  --color-purple-800: #6d4493;
+  --color-purple-900: #5a3979;
+  --color-purple-950: #3a2451;
   --color-light-purple: #9E78CF;
   --color-dark-purple: #1D1825;
   --color-black: #1E1E1E;
   --color-light-green: #78CFB0;
+  --color-light-orange: #ed9363;
 }
 
 html, body{

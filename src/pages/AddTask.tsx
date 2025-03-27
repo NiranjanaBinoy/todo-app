@@ -19,7 +19,7 @@ const AddTask = () =>{
     return(
         <>
             <input type="text" onChange={addTask} value={task}/>
-            <button className="add-button" type="button" onClick={handleTaskSubmition}>+</button>
+            <button className="add-button" type="submit" onClick={handleTaskSubmition}>+</button>
         </>
     )
 }

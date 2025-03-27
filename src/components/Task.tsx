@@ -5,18 +5,22 @@ type TaskProps = {
 }
 const Task = ({ task }: TaskProps) => {
     const { taskName, completed } = task;
-    const { completeTask } = useTaskContext();
+    const { completeTask, deleteTask } = useTaskContext();
 
-    const handleChecked = () => {
+    const handleCompletion = () => {
         completeTask(task)
+    }
+
+    const handleDeletion = () => {
+        deleteTask(task)
     }
 
     return (
         <>
-            <button className="list-button" disabled={completed}>
-                <input type="checkbox" checked={completed} onChange={handleChecked} disabled={completed}/> 
-                <div className={`task-value ${completed ? 'completed' : ''}`}>{taskName}</div>
-            </button>
+            <div className="list-button">
+                <button className={`task-button ${completed ? 'completed' : ''}`} onClick={handleCompletion}>{taskName}</button>
+                <button className='delete-task' aria-label="delete" onClick={handleDeletion}>X</button>
+            </div>
         </>
     )
 }
