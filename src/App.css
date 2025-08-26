@@ -108,6 +108,6 @@ input[type=text] {
   color: var(--color-light-orange);
 }
 .delete-task {
-  color: var(--color-dark-purple);
+  color: var(--color-purple-100);
   background-color: var(--color-light-purple);
 }

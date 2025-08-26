@@ -19,7 +19,7 @@ const Task = ({ task }: TaskProps) => {
         <>
             <div className="list-button">
                 <button className={`task-button ${completed ? 'completed' : ''}`} onClick={handleCompletion}>{taskName}</button>
-                <button className='delete-task' aria-label="delete" onClick={handleDeletion}>X</button>
+                <button className='delete-task' aria-label="delete" onClick={handleDeletion}>Delete</button>
             </div>
         </>
     )
