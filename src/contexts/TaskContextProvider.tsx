@@ -12,11 +12,12 @@ type State = {
 
 type Action = {
   type: string;
-  payload?: Task;
+  payload?: Task | Task[];
 }
 
 type TaskContextType = {
   state: State;
+  setTodoFromLocalStorage: () => void;
   updateTask: (taskName: string) => void;
   completeTask: (task: Task) => void;
   deleteTask: (task: Task) => void
@@ -26,27 +27,18 @@ type TaskContextType = {
 const taskReducerFunction = (state: State, action: Action): State => {
   switch(action.type){
     case "add": {
-      if(action.payload)
+      if(action.payload && !Array.isArray(action.payload)) {
         return {...state, tasksList: [...state.tasksList, action.payload]}
-      break;
-    }
-    case "complete": {
-      if(action.payload) {
-        const taskList = state.tasksList.filter((task) => task.id !== action.payload?.id )
-        return {...state, tasksList: [...taskList, action.payload]}
       }
       break;
     }
-    case "delete": {
-      if(action.payload){
-        const taskList = state.tasksList.filter((task) => task.id !== action.payload?.id)
-        return {...state, tasksList: [...taskList]}
+    case "complete":
+    case "delete":
+    case "deleteCompleted":
+    case "reloadTasks": {
+      if(action.payload && Array.isArray(action.payload)) {
+        return {...state, tasksList: [...action.payload]}
       }
-      break;
-    }
-    case "deleteCompleted": {
-      const taskList = state.tasksList.filter((task) => !task.completed)
-      return {...state, tasksList: [...taskList]}
       break;
     }
     default: 
@@ -61,41 +53,57 @@ const initialState: State = {
 
 const TaskContext: Context<TaskContextType> = createContext({
   state: initialState,
+  setTodoFromLocalStorage: () => {},
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   updateTask: (_taskName: string) => {},
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   completeTask: (_task: Task) => {},
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   deleteTask: (_task: Task) => {},
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   deleteCompleted: () => {}
 })
 
 const TaskContextProvider = ({children}: {children: ReactNode}) => {
     const[state, dispatch] = useReducer(taskReducerFunction, initialState);
     
+    const setTodoFromLocalStorage = () => {
+      const tasksFromLocalStorage = localStorage.getItem('tasks-todo');
+      if(tasksFromLocalStorage) {
+        const parsedTasks: Task[] = JSON.parse(tasksFromLocalStorage);
+        dispatch({type: 'reloadTasks', payload: parsedTasks})
+      }
+    };
+
     const updateTaskList = (taskName: string) => {
         const task = {
           id: state.tasksList.length+1,
           taskName: taskName,
           completed: false
         }
-        dispatch({type: 'add', payload: task})
+        dispatch({type: 'add', payload: task});
+        localStorage.setItem('tasks-todo', JSON.stringify([...state.tasksList, task]));
     }
 
     const completeTask = ( task: Task ) => {
-        dispatch({type:'complete', payload: {...task, completed: true}})
+        const taskList = state.tasksList.filter((tk) => tk.id !==task?.id )
+        dispatch({type:'complete', payload: [...taskList, {...task, completed: true}]})
+        localStorage.setItem('tasks-todo', JSON.stringify([...taskList, {...task, completed: true}]));
     };
 
     const deleteTask = (task: Task) => {
-        dispatch({type:'delete', payload: task})
+        const taskList = state.tasksList.filter((tk) => tk.id !== task.id)
+        dispatch({type:'delete', payload: taskList})
+        localStorage.setItem('tasks-todo', JSON.stringify(taskList));
     };
     const deleteCompleted = () => {
-      dispatch({type:'deleteCompleted'})
+      const taskList = state.tasksList.filter((task) => !task.completed)
+      dispatch({type:'deleteCompleted', payload: taskList})
+      localStorage.setItem('tasks-todo', JSON.stringify(taskList));
   };
 
     const taskContext: TaskContextType = {
         state: state,
+        setTodoFromLocalStorage: setTodoFromLocalStorage,
         updateTask: updateTaskList,
         completeTask: completeTask,
         deleteTask: deleteTask,
